@@ -131,6 +131,7 @@ GameObject:
   m_Component:
   - component: {fileID: 676368151}
   - component: {fileID: 676368150}
+  - component: {fileID: 676368152}
   m_Layer: 0
   m_Name: GeneratoreCarte
   m_TagString: Untagged
@@ -150,7 +151,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93df2dcd549c7d54389edc93f833594b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  refCarta: {fileID: 1228586235}
 --- !u!4 &676368151
 Transform:
   m_ObjectHideFlags: 0
@@ -163,8 +163,20 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &676368152
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 676368149}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b41b2062f8c46b4698f21a078bc77da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1228586235
 GameObject:
   m_ObjectHideFlags: 0
@@ -175,8 +187,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1228586237}
   - component: {fileID: 1228586236}
-  - component: {fileID: 1228586238}
   - component: {fileID: 1228586239}
+  - component: {fileID: 1228586238}
   m_Layer: 0
   m_Name: Carta
   m_TagString: Carta
@@ -246,7 +258,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1228586238
 MonoBehaviour:
@@ -257,12 +269,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1228586235}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41d65ac18e46e474d9af2ed3497fb3a1, type: 3}
+  m_Script: {fileID: 11500000, guid: aa0e557fb259aa643bca7210d4660163, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numeroCarta: 0
-  segnoCarta: 
-  immagineCarta: {fileID: 0}
 --- !u!61 &1228586239
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -301,7 +310,7 @@ GameObject:
   - component: {fileID: 1522306926}
   - component: {fileID: 1522306925}
   m_Layer: 0
-  m_Name: Camera
+  m_Name: Main Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -370,5 +379,5 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
