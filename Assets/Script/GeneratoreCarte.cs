@@ -8,6 +8,7 @@ public class GeneratoreCarte : MonoBehaviour
 {
     private GameObject refCarta; // Referenza Carta
     private GameObject[,] mazzoCarte = new GameObject[4,4]; // Crea il mazzo di carte vuoto
+    private Vector3[] posizioniCarte = new Vector3[16]; // Crea il vettore delle posizioni vuoto
 
     private void Awake()
     {
@@ -36,12 +37,13 @@ public class GeneratoreCarte : MonoBehaviour
         
     }
 
-    // Metodo che instanzai una carta e le assegna una posizione
+    // Metodo che instanzia una carta e le assegna una posizione
     private GameObject GeneraCarta(int i, int j)
     {
         GameObject cloneCarta = Instantiate(refCarta); // Creiamo un clone della carta
         cloneCarta.SetActive(true); // Attiviamo la carta
-        cloneCarta.transform.position = new Vector2(i * 3 - 4, j * 4 - 6);
+        cloneCarta.transform.position = new Vector2(i * 3 - 4, j * 4 - 6); // Assegnamo la posizione alla carta appena creata
+        posizioniCarte[i * 4 + j] = cloneCarta.transform.position; // Memorizziamo la posizione nell'array delle posizioni per poi poter fare lo shuffle
 
         return cloneCarta;
     }
@@ -56,5 +58,17 @@ public class GeneratoreCarte : MonoBehaviour
     public GameObject[,] getMazzoCarte()
     {
         return this.mazzoCarte;
+    }
+
+    // Setter Posizioni Carte
+    public void setPosizioniCarte(Vector3[] posizioniCarte)
+    {
+        this.posizioniCarte = posizioniCarte;
+    }
+
+    // Getter Posizioni Carte
+    public Vector3[] getPosizioniCarte()
+    {
+        return this.posizioniCarte;
     }
 }
