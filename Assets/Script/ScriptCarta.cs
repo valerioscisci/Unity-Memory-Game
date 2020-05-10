@@ -23,7 +23,6 @@ public class ScriptCarta : MonoBehaviour
     private void OnMouseDown()
     {
         cliccata = true;
-        GetComponent<BoxCollider2D>().enabled = false;
         refGameManager.SottraiClick(gameObject);
     }
 
@@ -31,7 +30,6 @@ public class ScriptCarta : MonoBehaviour
     public void setCliccata()
     {
         cliccata = false;
-        GetComponent<BoxCollider2D>().enabled = true;
     }
 
     // Setter immagineCarta

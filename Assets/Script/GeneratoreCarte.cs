@@ -20,6 +20,7 @@ public class GeneratoreCarte : MonoBehaviour
             for (int j = 0; j < 4; j++)
             {
                 mazzoCarte[i, j] = GeneraCarta(i, j);
+                mazzoCarte[i, j].GetComponentsInChildren<SpriteRenderer>()[1].enabled = false;
             }
         }
         refCarta.SetActive(false); // Disattiva dal gioco la nostra carta "Blueprint" che ci permette di creare le altre
