@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 // Classe che gestisce il gioco nella sua interezza
 public class GameManager : MonoBehaviour
@@ -10,13 +12,20 @@ public class GameManager : MonoBehaviour
     private int contatoreClick = 2; // Contatore che memorizza il numero di click disponibili
     private bool abilitaClick = true;
     private GameObject[] carteCliccate = new GameObject[2]; // Variabile di appoggio da passare alla Coroutine che verificherà se esse sono uguali
+    private int vite = 2, combo = 1; // Variabili che contengono le vite e la combo  attuali
+    private Text testoPunteggio; // Variabile che mi serve per assegnare il valore del punteggio al testo "In-Game"
+    private Image[] cuori = new Image[3]; // Variabili per le immaggini dei cuori
+    private int carteRimanenti = 16; // Contatore della carte rimanenti da accoppiare prima del termine della partita
 
-// Start is called before the first frame update
-void Start()
+    // Start is called before the first frame update
+    void Start()
     {
         refGeneratore = GameObject.FindGameObjectWithTag("GeneratoreCarte").GetComponent<GeneratoreCarte>(); // Prendiamo la referenza del generatore di carte
         GameObject[,] mazzoCarte = refGeneratore.getMazzoCarte(); // Recuperiamo il mazzo di carte generato dal generatore
         StartCoroutine("GiraCarte", mazzoCarte); // Lanciamo la Coroutine che gira le carte dopo 2 secondi 
+        testoPunteggio = GameObject.FindGameObjectWithTag("Punteggio").GetComponent<Text>(); // Prendiamo la referenza al punteggio in game per poi cambiarlo al momento giusto 
+        cuori = GameObject.FindGameObjectWithTag("Cuore").GetComponentsInChildren<Image>(); // Recuperiamo i cuori
+        SharedVariables.punteggio = 0; // Azzeriamo il punteggio ad inizio partita visto che potrebbe essere ancora presente quello della partita precedente
     }
 
     // Update is called once per frame
@@ -67,13 +76,13 @@ void Start()
     // Coroutine che abilita il retro di tutte le carte del mazzo ad inizio partita dopo 2 secondi
     private IEnumerator GiraCarte(GameObject[,] mazzoCarte)
     {
-        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.lockState = CursorLockMode.Locked; // Blocca il cursore dell'utente
         yield return new WaitForSeconds(2);
         foreach (GameObject carta in mazzoCarte)
         {
             carta.GetComponentsInChildren<SpriteRenderer>()[1].enabled = true;
         }
-        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.lockState = CursorLockMode.Confined; // Riabilita il cursore dell'utente
     }
 
     // Coroutine che si occupa di distruggere le carte se uguali e di rigirarle se diverse
@@ -84,15 +93,43 @@ void Start()
         if (azione.Equals("distruggi")) {
             carteCliccate[0].SetActive(false); // Distruggi Carta 1
             carteCliccate[1].SetActive(false); // Distruggi Carta 2
+            SharedVariables.punteggio += 100 * combo; // Aumenta il punteggio
+            testoPunteggio.text = SharedVariables.punteggio.ToString(); // Assegna il testo del punteggio "In-Game"
+            combo++; // Aumenta la combo attuale
+            carteRimanenti -= 2; // Diminuisce le carte rimanenti per la vittoria
+            if (carteRimanenti == 0) // Se non rimangono più carte, la partita termina con successo
+            {
+                TerminaPartita("vittoria");
+            }
         }
         else if (azione.Equals("reset"))
         {
-            carteCliccate[0].GetComponent<ScriptCarta>().setCliccata(); // Indica che la prima carta non è più cliccata
-            carteCliccate[1].GetComponent<ScriptCarta>().setCliccata(); // Indica che la seconda carta non è più cliccata 
+            carteCliccate[0].GetComponent<ScriptCarta>().SetCliccata(); // Indica che la prima carta non è più cliccata
+            carteCliccate[1].GetComponent<ScriptCarta>().SetCliccata(); // Indica che la seconda carta non è più cliccata 
             carteCliccate[0].GetComponentsInChildren<SpriteRenderer>()[1].enabled = true; // Rigira la carta 1
             carteCliccate[1].GetComponentsInChildren<SpriteRenderer>()[1].enabled = true; // Rigira la carta 2
+            combo = 1; // Resetta le combo
+            cuori[vite].enabled = false; // Rimuove uno dei cuori disponibili
+            vite -= 1; // Diminuisce le vite 
+            if (vite == -1) // Se non ci sono più vite termina la partita con una sconfitta
+            {
+                TerminaPartita("sconfitta");
+            }
         }
         abilitaClick = true; // Abilita click
         contatoreClick = 2; // Reset contatore
+    }
+
+    // Metodo che si occupa di terminare la partita
+    private void TerminaPartita(string finePartita)
+    {
+        if (finePartita.Equals("vittoria"))
+        {
+            SharedVariables.messaggio = "HAI VINTO!!!";
+        } else
+        {
+            SharedVariables.messaggio = "HAI PERSO...";
+        }
+        SceneManager.LoadScene("FinePartita", LoadSceneMode.Single); // Cambio di scena che mostra il risultato della partita, 
     }
 }

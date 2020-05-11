@@ -28,7 +28,7 @@ public class ManagerCarte : MonoBehaviour
 
         posizioniCarte = refGeneratore.getPosizioniCarte(); // Recuperiamo il vettore di posizioni iniziali dalla referenza al generatore
         // Chiamiamo il metodo che mischia le carte
-        shuffle(posizioniCarte);
+        Shuffle(posizioniCarte);
 
         // Cicliamo 8 volte per valorizzare gli attributi delle coppie di carte
         for (int i = 0; i < 4; i++)
@@ -42,8 +42,8 @@ public class ManagerCarte : MonoBehaviour
                 }
 
                 // Assegnamo le sprite della coppia di carte
-                mazzoCarte[i, j].GetComponent<ScriptCarta>().setImmagineCarta(spritesCarte[numeroSpriteRandom]);
-                mazzoCarte[i, j + 1].GetComponent<ScriptCarta>().setImmagineCarta(spritesCarte[numeroSpriteRandom]);
+                mazzoCarte[i, j].GetComponent<ScriptCarta>().SetImmagineCarta(spritesCarte[numeroSpriteRandom]);
+                mazzoCarte[i, j + 1].GetComponent<ScriptCarta>().SetImmagineCarta(spritesCarte[numeroSpriteRandom]);
 
                 // Assegnamo la posizione alla coppia di carte
                 mazzoCarte[i, j].transform.position = posizioniCarte[i * 4 + j];
@@ -59,7 +59,7 @@ public class ManagerCarte : MonoBehaviour
     }
 
     // Metodo che mischia l'array delle posizioni (Knuth shuffle algorithm)
-    void shuffle(Vector3[] posizioniCarte)
+    void Shuffle(Vector3[] posizioniCarte)
     {
         for (int i = 0; i < posizioniCarte.Length; i++)
         {

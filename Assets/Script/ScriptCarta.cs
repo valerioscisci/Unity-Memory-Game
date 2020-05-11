@@ -27,13 +27,13 @@ public class ScriptCarta : MonoBehaviour
     }
 
     // Setter cliccata
-    public void setCliccata()
+    public void SetCliccata()
     {
         cliccata = false;
     }
 
     // Setter immagineCarta
-    public void setImmagineCarta(Sprite immagineCarta)
+    public void SetImmagineCarta(Sprite immagineCarta)
     {
         GetComponent<SpriteRenderer>().sprite = immagineCarta;
     }
