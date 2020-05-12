@@ -1,0 +1,4 @@
+-particelle distruzione carte
+-particelle vittoria/sconfitta
+-combo
+-animazione rotazione carte

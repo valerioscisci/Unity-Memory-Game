@@ -42,16 +42,18 @@ public class GameManager : MonoBehaviour
             if (cartaCliccata_1 != cartaCliccata) { // Questo if serve per la seconda carta cliccata: se essa è proprio la prima carta cliccata, allora non diminuisce i click disponibili
                 contatoreClick -= 1;
             }
-            if (contatoreClick == 1) // Quando viene cliccata la prima carta, la gira per mostrarla
+            if (contatoreClick == 1 && cartaCliccata_1 != cartaCliccata) // Quando viene cliccata la prima carta, la gira per mostrarla
             {
                 cartaCliccata_1 = cartaCliccata;
                 cartaCliccata_1.GetComponentsInChildren<SpriteRenderer>()[1].enabled = false;
+                cartaCliccata_1.GetComponentInChildren<ParticleSystem>().Play(); // Lancia l'animazione sulla carta 1
             }
             else if (contatoreClick == 0) // Quando viene cliccata la seconda carta che non sia la stessa identica prima carta cliccata si entra nell'else
             {
                 abilitaClick = false; // Disabilita i click fino a fine controllo
                 cartaCliccata_2 = cartaCliccata;
                 cartaCliccata_2.GetComponentsInChildren<SpriteRenderer>()[1].enabled = false; //Mostra la seconda carta cliccata
+                cartaCliccata_2.GetComponentInChildren<ParticleSystem>().Play(); // Lancia l'animazione sulla carta 2
                 CheckNomi(); // Parte il metodo per il controllo delle carte cliccate
             }
         }
