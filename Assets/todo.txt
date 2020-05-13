@@ -1,4 +1,3 @@
--particelle distruzione carte
--particelle vittoria/sconfitta
 -combo
+-musica maestro freesound.org
 -animazione rotazione carte

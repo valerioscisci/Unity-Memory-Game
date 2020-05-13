@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 public class LevelManager : MonoBehaviour
 {
     private Button bottonePlay, bottoneQuit, bottoneMenu; // Crea le variabili dei bottoi del menu
-    private Text testoMessaggio, valorePunteggio; // CRea le variabili di appoggio dei testi mostrati a fine partita
+    private Text testoMessaggio, valorePunteggio; // Crea le variabili di appoggio dei testi mostrati a fine partita
     private GameObject testoPunteggio;
 
     // Start is called before the first frame update
@@ -62,6 +62,11 @@ public class LevelManager : MonoBehaviour
                 testoPunteggio.SetActive(true); // Se l'utente  ha vinto si mostra il testo "Punteggio"
                 valorePunteggio = GameObject.FindGameObjectWithTag("PunteggioFinale").GetComponent<Text>(); // Recupera il testo per inserirci il punteggio finale
                 valorePunteggio.text = SharedVariables.punteggio.ToString(); // Inserisci il punteggio finale
+                GetComponentsInChildren<ParticleSystem>()[0].Play(); // Lancia l'animazione della vittoria
+            }
+            else // Se abbiamo perso
+            {
+                GetComponentsInChildren<ParticleSystem>()[1].Play(); // Lancia l'animazione della sconfitta
             }
         }
     }
