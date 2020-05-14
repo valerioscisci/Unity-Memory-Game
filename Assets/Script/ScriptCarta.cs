@@ -6,7 +6,7 @@ using UnityEngine;
 public class ScriptCarta : MonoBehaviour
 {
     private bool cliccata = false;
-    private GameManager refGameManager;
+    private GameManager refGameManager; // Referenza Game Manager
 
     // Start is called before the first frame update
     void Start()
@@ -22,6 +22,10 @@ public class ScriptCarta : MonoBehaviour
     // Metodo che memorizza il fatto che la carta è stata cliccata, la disattiva e diminuisce di uno il counter del Game Manager
     private void OnMouseDown()
     {
+        if (cliccata != true) // Verifichiamo che sia la prima volta che clicchiamo la carta
+        {
+            refGameManager.GetAudioManager().GetCardFlip().Play(); // Eseguiamo il suono della carta che viene ruotata
+        }
         cliccata = true;
         refGameManager.SottraiClick(gameObject);
     }

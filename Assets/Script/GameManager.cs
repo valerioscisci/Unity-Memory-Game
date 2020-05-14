@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     private Text testoPunteggio; // Variabile che mi serve per assegnare il valore del punteggio al testo "In-Game"
     private Image[] cuori = new Image[3]; // Variabili per le immaggini dei cuori
     private int carteRimanenti = 16; // Contatore della carte rimanenti da accoppiare prima del termine della partita
+    private AudioManager refAudioManager; // Prendiamo la referenza all'audio manager per poter lanciare i suoni
 
     // Start is called before the first frame update
     void Start()
@@ -26,6 +27,7 @@ public class GameManager : MonoBehaviour
         testoPunteggio = GameObject.FindGameObjectWithTag("Punteggio").GetComponent<Text>(); // Prendiamo la referenza al punteggio in game per poi cambiarlo al momento giusto 
         cuori = GameObject.FindGameObjectWithTag("Cuore").GetComponentsInChildren<Image>(); // Recuperiamo i cuori
         SharedVariables.punteggio = 0; // Azzeriamo il punteggio ad inizio partita visto che potrebbe essere ancora presente quello della partita precedente
+        refAudioManager = GameObject.FindGameObjectWithTag("AudioManager").GetComponent<AudioManager>(); // Prende l'oggetto con il tag AudioManager in modo da averlo disponibile in ogni scena visto che il GameManager è sempre presente
     }
 
     // Update is called once per frame
@@ -93,6 +95,7 @@ public class GameManager : MonoBehaviour
         if (azione.Equals("distruggi")) {
             carteCliccate[0].GetComponentsInChildren<ParticleSystem>()[1].Play(); // Lancia l'animazione della distruzione sulla carta 1
             carteCliccate[1].GetComponentsInChildren<ParticleSystem>()[1].Play(); // Lancia l'animazione della distruzione sulla carta 2
+            refAudioManager.GetCardDestroy().Play();
             yield return new WaitForSeconds(1); // Aspetta un secondo
             carteCliccate[0].SetActive(false); // Distruggi Carta 1
             carteCliccate[1].SetActive(false); // Distruggi Carta 2
@@ -135,5 +138,11 @@ public class GameManager : MonoBehaviour
             SharedVariables.messaggio = "HAI PERSO...";
         }
         SceneManager.LoadScene("FinePartita", LoadSceneMode.Single); // Cambio di scena che mostra il risultato della partita, 
+    }
+
+    // Getter dell'Audio Manager
+    public AudioManager GetAudioManager()
+    {
+        return refAudioManager;
     }
 }

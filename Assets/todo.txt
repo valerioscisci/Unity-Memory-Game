@@ -1,3 +1,2 @@
 -combo
--musica maestro freesound.org
 -animazione rotazione carte
