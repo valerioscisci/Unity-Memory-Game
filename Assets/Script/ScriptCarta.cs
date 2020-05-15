@@ -22,7 +22,7 @@ public class ScriptCarta : MonoBehaviour
     // Metodo che memorizza il fatto che la carta è stata cliccata, la disattiva e diminuisce di uno il counter del Game Manager
     private void OnMouseDown()
     {
-        if (cliccata != true) // Verifichiamo che sia la prima volta che clicchiamo la carta
+        if (cliccata == false && refGameManager.GetDistruggiCheck() == false) // Verifichiamo che sia la prima volta che clicchiamo la carta e che non si stanno controllando due carte
         {
             refGameManager.GetAudioManager().GetCardFlip().Play(); // Eseguiamo il suono della carta che viene ruotata
         }

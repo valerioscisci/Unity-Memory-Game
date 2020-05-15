@@ -1,2 +1,3 @@
+-ordine punteggio, retry ecc..
 -combo
 -animazione rotazione carte

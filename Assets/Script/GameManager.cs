@@ -10,14 +10,14 @@ public class GameManager : MonoBehaviour
     private GeneratoreCarte refGeneratore;
     private GameObject cartaCliccata_1 = null, cartaCliccata_2 = null; // Variabili per memorizzare le carte che sono state cliccate
     private int contatoreClick = 2; // Contatore che memorizza il numero di click disponibili
-    private bool abilitaClick = true;
+    private bool abilitaClick = true, distruggiCheck = false; // Check che permettono di abilitare il click delle carte e il suono del flip
     private GameObject[] carteCliccate = new GameObject[2]; // Variabile di appoggio da passare alla Coroutine che verificherà se esse sono uguali
     private int vite = 2, combo = 1; // Variabili che contengono le vite e la combo  attuali
     private Text testoPunteggio; // Variabile che mi serve per assegnare il valore del punteggio al testo "In-Game"
     private Image[] cuori = new Image[3]; // Variabili per le immaggini dei cuori
     private int carteRimanenti = 16; // Contatore della carte rimanenti da accoppiare prima del termine della partita
     private AudioManager refAudioManager; // Prendiamo la referenza all'audio manager per poter lanciare i suoni
-
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -92,6 +92,7 @@ public class GameManager : MonoBehaviour
     // Coroutine che si occupa di distruggere le carte se uguali e di rigirarle se diverse
     private IEnumerator GestisciCoppiaCarte(string azione)
     {
+        distruggiCheck = true; // Indica che il suono delle carte non può partire mentre si stanno confrontanto due carte
         if (azione.Equals("distruggi")) {
             carteCliccate[0].GetComponentsInChildren<ParticleSystem>()[1].Play(); // Lancia l'animazione della distruzione sulla carta 1
             carteCliccate[1].GetComponentsInChildren<ParticleSystem>()[1].Play(); // Lancia l'animazione della distruzione sulla carta 2
@@ -123,6 +124,7 @@ public class GameManager : MonoBehaviour
                 TerminaPartita("sconfitta");
             }
         }
+        distruggiCheck = false; // Riattiviamo il suono del flip delle carte
         abilitaClick = true; // Abilita click
         contatoreClick = 2; // Reset contatore
     }
@@ -144,5 +146,11 @@ public class GameManager : MonoBehaviour
     public AudioManager GetAudioManager()
     {
         return refAudioManager;
+    }
+
+    // Getter di Distruggi Check
+    public bool GetDistruggiCheck()
+    {
+        return distruggiCheck;
     }
 }

@@ -76,13 +76,15 @@ public class LevelManager : MonoBehaviour
                 testoPunteggio.SetActive(true); // Se l'utente  ha vinto si mostra il testo "Punteggio"
                 valorePunteggio = GameObject.FindGameObjectWithTag("PunteggioFinale").GetComponent<Text>(); // Recupera il testo per inserirci il punteggio finale
                 valorePunteggio.text = SharedVariables.punteggio.ToString(); // Inserisci il punteggio finale
-                GetComponentsInChildren<ParticleSystem>()[0].Play(); // Lancia l'animazione della vittoria     
+                GetComponentsInChildren<ParticleSystem>()[0].Play(); // Lancia l'animazione della vittoria    
+                testoMessaggio.color = Color.green; // Mettiamo il colore della scritta in verde
             }
             else // Se abbiamo perso
             {
                 refAudioManager.GetLost().Play();  // Lanciamo il souno della sconfitta
                 StartCoroutine("AttesaSoundtrack", "Sconfitta"); // Lanciamo la coroutine che attende che il suono della sconfitta finisca
                 GetComponentsInChildren<ParticleSystem>()[1].Play(); // Lancia l'animazione della sconfitta
+                testoMessaggio.color = Color.red; // Mettiamo il colore della scritta in rosso
             }
         }
     }
