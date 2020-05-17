@@ -17,7 +17,8 @@ public class GameManager : MonoBehaviour
     private Image[] cuori = new Image[3]; // Variabili per le immaggini dei cuori
     private int carteRimanenti = 16; // Contatore della carte rimanenti da accoppiare prima del termine della partita
     private AudioManager refAudioManager; // Prendiamo la referenza all'audio manager per poter lanciare i suoni
-    
+    private ComboManager refComboManager; // Prendiamo la referenza del combo manager per poter visualizzare le combo
+
     // Start is called before the first frame update
     void Start()
     {
@@ -28,6 +29,7 @@ public class GameManager : MonoBehaviour
         cuori = GameObject.FindGameObjectWithTag("Cuore").GetComponentsInChildren<Image>(); // Recuperiamo i cuori
         SharedVariables.punteggio = 0; // Azzeriamo il punteggio ad inizio partita visto che potrebbe essere ancora presente quello della partita precedente
         refAudioManager = GameObject.FindGameObjectWithTag("AudioManager").GetComponent<AudioManager>(); // Prende l'oggetto con il tag AudioManager in modo da averlo disponibile in ogni scena visto che il GameManager è sempre presente
+        refComboManager = GameObject.FindGameObjectWithTag("ComboManager").GetComponent<ComboManager>(); // Prende l'oggetto con il tag ComboManager
     }
 
     // Update is called once per frame
@@ -102,6 +104,7 @@ public class GameManager : MonoBehaviour
             carteCliccate[1].SetActive(false); // Distruggi Carta 2
             SharedVariables.punteggio += 100 * combo; // Aumenta il punteggio
             testoPunteggio.text = SharedVariables.punteggio.ToString(); // Assegna il testo del punteggio "In-Game"
+            StartCoroutine("MostraCombo"); // Lanciamo la coroutine che mostra la combo attuale
             combo++; // Aumenta la combo attuale
             carteRimanenti -= 2; // Diminuisce le carte rimanenti per la vittoria
             if (carteRimanenti == 0) // Se non rimangono più carte, la partita termina con successo
@@ -117,10 +120,11 @@ public class GameManager : MonoBehaviour
             carteCliccate[0].GetComponentsInChildren<SpriteRenderer>()[1].enabled = true; // Rigira la carta 1
             carteCliccate[1].GetComponentsInChildren<SpriteRenderer>()[1].enabled = true; // Rigira la carta 2
             combo = 1; // Resetta le combo
-            cuori[vite].enabled = false; // Rimuove uno dei cuori disponibili
+            StartCoroutine("DistruggiCuore", cuori[vite]); // Rimuove uno dei cuori disponibili
             vite -= 1; // Diminuisce le vite 
             if (vite == -1) // Se non ci sono più vite termina la partita con una sconfitta
             {
+                yield return new WaitForSeconds(1); // Aspetta un secondo
                 TerminaPartita("sconfitta");
             }
         }
@@ -140,6 +144,23 @@ public class GameManager : MonoBehaviour
             SharedVariables.messaggio = "HAI PERSO...";
         }
         SceneManager.LoadScene("FinePartita", LoadSceneMode.Single); // Cambio di scena che mostra il risultato della partita, 
+    }
+
+    // Coroutine che mostra l'animazione di distruzione del cuore
+    IEnumerator DistruggiCuore(Image cuore)
+    {
+        cuore.GetComponent<Animator>().enabled = true; // Lancia l'animazione
+        yield return new WaitForSeconds(1); // Aspetta 1 secondo
+        Destroy(cuore.gameObject); // Distrugge l'oggetto
+    }
+
+    // Coroutine che mostra l'animazione della combo attuale
+    IEnumerator MostraCombo()
+    {
+        refComboManager.GetComponentInChildren<SpriteRenderer>().sprite = refComboManager.GetSpritesCombo(combo); // Prendiamo la sprite corretta da visualizzare in base alla combo
+        refComboManager.GetComponentInChildren<Animator>().enabled = true; // Lanciamo l'animazione che la mostra
+        yield return new WaitForSeconds(1); // Aspetta 1 secondo
+        refComboManager.GetComponentInChildren<Animator>().enabled = false; // Disattiviamo l'animazione in modo da poterla lanciare nuovamente la prossima volta
     }
 
     // Getter dell'Audio Manager

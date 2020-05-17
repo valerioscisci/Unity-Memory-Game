@@ -9596,6 +9596,7 @@ GameObject:
   - component: {fileID: 7364845743353960881}
   - component: {fileID: 7364845743353960882}
   - component: {fileID: 7364845743353960883}
+  - component: {fileID: 5372110038758515101}
   m_Layer: 9
   m_Name: Carta
   m_TagString: Carta
@@ -9611,7 +9612,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7364845743353960886}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -20.01, y: -0.05, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 7364845743831939060}
@@ -9708,6 +9709,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa0e557fb259aa643bca7210d4660163, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!95 &5372110038758515101
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7364845743353960886}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 5726c2d6369dabd4798a5a069277a3a2, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &7364845743831939061
 GameObject:
   m_ObjectHideFlags: 0
@@ -9718,6 +9738,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7364845743831939060}
   - component: {fileID: 7364845743831939063}
+  - component: {fileID: 8355090011771029406}
   m_Layer: 9
   m_Name: RetroCarta
   m_TagString: RetroCarta
@@ -9789,3 +9810,22 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!95 &8355090011771029406
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7364845743831939061}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 191b6b0fc0b1a2a4a891632d4418d1b7, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
