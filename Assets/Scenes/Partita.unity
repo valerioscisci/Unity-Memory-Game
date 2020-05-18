@@ -6238,6 +6238,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Carta
       objectReference: {fileID: 0}
+    - target: {fileID: 7875441208256517010, guid: b28f8523c565f4447a72107e81d3d8a4,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8355090011771029406, guid: b28f8523c565f4447a72107e81d3d8a4,
         type: 3}
       propertyPath: m_Enabled
