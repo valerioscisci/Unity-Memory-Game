@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 // Classe che si occupa di caricare e gestire le sprite delle combo
 public class ComboManager : MonoBehaviour
@@ -29,6 +27,6 @@ public class ComboManager : MonoBehaviour
     // Getter Sprite Combo
     public Sprite GetSpritesCombo(int combo)
     {
-        return spritesCombos[combo-1];
+        return spritesCombos[combo-1]; // Il -1 serve per far partire le combo da 1 visto che altrimenti alla prima coppia di carte indovinate si avrebbe combo=2
     }
 }

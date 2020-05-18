@@ -49,14 +49,14 @@ public class GameManager : MonoBehaviour
             if (contatoreClick == 1 && cartaCliccata_1 != cartaCliccata) // Quando viene cliccata la prima carta, la gira per mostrarla
             {
                 cartaCliccata_1 = cartaCliccata;
-                cartaCliccata_1.GetComponentsInChildren<SpriteRenderer>()[1].enabled = false;
-                cartaCliccata_1.GetComponentsInChildren<ParticleSystem>()[0].Play(); // Lancia l'animazione del click sulla carta 1
+                StartCoroutine("AnimazioneCarta", cartaCliccata_1);  // Coroutine che gestisce l'animazione del flip della carta 1
+                cartaCliccata_1.GetComponentsInChildren<ParticleSystem>()[0].Play(); // Lancia l'effetto particellare del click sulla carta 1
             }
             else if (contatoreClick == 0) // Quando viene cliccata la seconda carta che non sia la stessa identica prima carta cliccata si entra nell'else
             {
                 abilitaClick = false; // Disabilita i click fino a fine controllo
                 cartaCliccata_2 = cartaCliccata;
-                cartaCliccata_2.GetComponentsInChildren<SpriteRenderer>()[1].enabled = false; //Mostra la seconda carta cliccata
+                StartCoroutine("AnimazioneCarta", cartaCliccata_2); // Coroutine che gestisce l'animazione del flip della carta 2
                 cartaCliccata_2.GetComponentsInChildren<ParticleSystem>()[0].Play(); // Lancia l'animazione del click sulla carta 2
                 CheckNomi(); // Parte il metodo per il controllo delle carte cliccate
             }
@@ -68,7 +68,7 @@ public class GameManager : MonoBehaviour
     {
         carteCliccate = new GameObject[] { cartaCliccata_1, cartaCliccata_2 };
 
-        if (cartaCliccata_1.GetComponent<SpriteRenderer>().sprite.name.Equals(cartaCliccata_2.GetComponent<SpriteRenderer>().sprite.name))
+        if (cartaCliccata_1.GetComponentsInChildren<SpriteRenderer>()[1].sprite.name.Equals(cartaCliccata_2.GetComponentsInChildren<SpriteRenderer>()[1].sprite.name))
         { // Se sono uguali disattivale
             StartCoroutine("GestisciCoppiaCarte", "distruggi"); // Parte  la coroutine che aspetta .5 secondi e distrugge le carte
         }
@@ -79,14 +79,16 @@ public class GameManager : MonoBehaviour
         cartaCliccata_1 = null; // Azzera la prima carta così può riniziare il controllo della prossima coppia di carte cliccate
     }
 
-    // Coroutine che abilita il retro di tutte le carte del mazzo ad inizio partita dopo 2 secondi
+    // Coroutine che abilita il retro di tutte le carte del mazzo e lancia l'animazione del flip ad inizio partita dopo 2 secondi
     private IEnumerator GiraCarte(GameObject[,] mazzoCarte)
     {
         Cursor.lockState = CursorLockMode.Locked; // Blocca il cursore dell'utente
         yield return new WaitForSeconds(2);
         foreach (GameObject carta in mazzoCarte)
         {
-            carta.GetComponentsInChildren<SpriteRenderer>()[1].enabled = true;
+            carta.GetComponentsInChildren<SpriteRenderer>()[0].enabled = true; // Abilitiamo il retro di ogni carta
+            carta.GetComponentsInChildren<Animator>()[0].enabled = true; // Lanciamo l'animazione del retro della carta
+            carta.GetComponentsInChildren<Animator>()[1].enabled = true; // Lanciamo l'animazione del fronte della carta
         }
         Cursor.lockState = CursorLockMode.Confined; // Riabilita il cursore dell'utente
     }
@@ -96,10 +98,12 @@ public class GameManager : MonoBehaviour
     {
         distruggiCheck = true; // Indica che il suono delle carte non può partire mentre si stanno confrontanto due carte
         if (azione.Equals("distruggi")) {
-            carteCliccate[0].GetComponentsInChildren<ParticleSystem>()[1].Play(); // Lancia l'animazione della distruzione sulla carta 1
-            carteCliccate[1].GetComponentsInChildren<ParticleSystem>()[1].Play(); // Lancia l'animazione della distruzione sulla carta 2
-            refAudioManager.GetCardDestroy().Play();
+            
             yield return new WaitForSeconds(1); // Aspetta un secondo
+            carteCliccate[0].GetComponentsInChildren<ParticleSystem>()[1].Play(); // Lancia l'effetto particellare della distruzione sulla carta 1
+            carteCliccate[1].GetComponentsInChildren<ParticleSystem>()[1].Play(); // Lancia l'effetto particellare della distruzione sulla carta 2
+            yield return new WaitForSeconds(1); // Aspetta un secondo
+            refAudioManager.GetCardDestroy().Play(); // Lancio l'audio della distruzione delle carte
             carteCliccate[0].SetActive(false); // Distruggi Carta 1
             carteCliccate[1].SetActive(false); // Distruggi Carta 2
             SharedVariables.punteggio += 100 * combo; // Aumenta il punteggio
@@ -114,11 +118,22 @@ public class GameManager : MonoBehaviour
         }
         else if (azione.Equals("reset"))
         {
+            // NOTA: animazioni di fronte e retro devono partire in differita altrimenti si sovrappongono
+            // NOTA2: servono due variabili booleane per ogni animazione, perciò abbiamo cliccata e comboErrata per la prima mentre cliccataFronte e comboErrataFronte per la seconda.
+            // Il motivo è che altrimenti nell'albero delle animazioni si avrebbe il loop dell'animazione, mentre gestendo le variabili manualmente non ho problemi di sorta
             yield return new WaitForSeconds(1); // Aspetta un secondo
+            carteCliccate[0].GetComponentsInChildren<Animator>()[1].SetBool("cliccataFronte", false); // Fa partire l'animazione del fronte della carta 1
+            carteCliccate[1].GetComponentsInChildren<Animator>()[1].SetBool("cliccataFronte", false); // Fa partire l'animazione del fronte della carta 2
+            yield return new WaitForSeconds(0.3f); // Aspetta 0.3 secondi
+            carteCliccate[0].GetComponentsInChildren<Animator>()[0].SetBool("cliccata", false); // Fa partire l'animazione del retro della carta 1
+            carteCliccate[1].GetComponentsInChildren<Animator>()[0].SetBool("cliccata", false); // Fa partire l'animazione del restro della carta 2
+            // Segno che la coppia è errata con le prossime 4 istruzioni, permettendo la rotazione delle carte
+            carteCliccate[0].GetComponentsInChildren<Animator>()[0].SetBool("comboErrata", true);
+            carteCliccate[1].GetComponentsInChildren<Animator>()[0].SetBool("comboErrata", true);
+            carteCliccate[0].GetComponentsInChildren<Animator>()[1].SetBool("comboErrataFronte", true);
+            carteCliccate[1].GetComponentsInChildren<Animator>()[1].SetBool("comboErrataFronte", true);
             carteCliccate[0].GetComponent<ScriptCarta>().SetCliccata(); // Indica che la prima carta non è più cliccata
-            carteCliccate[1].GetComponent<ScriptCarta>().SetCliccata(); // Indica che la seconda carta non è più cliccata 
-            carteCliccate[0].GetComponentsInChildren<SpriteRenderer>()[1].enabled = true; // Rigira la carta 1
-            carteCliccate[1].GetComponentsInChildren<SpriteRenderer>()[1].enabled = true; // Rigira la carta 2
+            carteCliccate[1].GetComponent<ScriptCarta>().SetCliccata(); // Indica che la seconda carta non è più cliccata
             combo = 1; // Resetta le combo
             StartCoroutine("DistruggiCuore", cuori[vite]); // Rimuove uno dei cuori disponibili
             vite -= 1; // Diminuisce le vite 
@@ -127,6 +142,12 @@ public class GameManager : MonoBehaviour
                 yield return new WaitForSeconds(1); // Aspetta un secondo
                 TerminaPartita("sconfitta");
             }
+            yield return new WaitForSeconds(1); // Aspetta un secondo
+            // Con le prossime 4 istruzioni rimetto le variabili per la comboErrata a false così nell'albero delle animazioni si attende che una nuova coppia sia cliccata prima di ripartire con le animazioni per farle tornare in posizione se errate
+            carteCliccate[0].GetComponentsInChildren<Animator>()[0].SetBool("comboErrata", false);
+            carteCliccate[1].GetComponentsInChildren<Animator>()[0].SetBool("comboErrata", false);
+            carteCliccate[0].GetComponentsInChildren<Animator>()[1].SetBool("comboErrataFronte", false);
+            carteCliccate[1].GetComponentsInChildren<Animator>()[1].SetBool("comboErrataFronte", false);
         }
         distruggiCheck = false; // Riattiviamo il suono del flip delle carte
         abilitaClick = true; // Abilita click
@@ -161,6 +182,14 @@ public class GameManager : MonoBehaviour
         refComboManager.GetComponentInChildren<Animator>().enabled = true; // Lanciamo l'animazione che la mostra
         yield return new WaitForSeconds(1); // Aspetta 1 secondo
         refComboManager.GetComponentInChildren<Animator>().enabled = false; // Disattiviamo l'animazione in modo da poterla lanciare nuovamente la prossima volta
+    }
+
+    // Coroutine che mostra l'animazione della combo attuale
+    IEnumerator AnimazioneCarta(GameObject cartaCliccata)
+    {
+        cartaCliccata.GetComponentsInChildren<Animator>()[0].SetBool("cliccata", true); // Lancia l'animazione del retro della carta passata come parametro
+        yield return new WaitForSeconds(0.3f); // Aspetta 0.3 secondi
+        cartaCliccata.GetComponentsInChildren<Animator>()[1].SetBool("cliccataFronte", true); // Lancia l'animazione del fronte della carta passata come parametro
     }
 
     // Getter dell'Audio Manager

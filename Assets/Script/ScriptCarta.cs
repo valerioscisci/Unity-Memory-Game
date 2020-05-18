@@ -39,6 +39,6 @@ public class ScriptCarta : MonoBehaviour
     // Setter immagineCarta
     public void SetImmagineCarta(Sprite immagineCarta)
     {
-        GetComponent<SpriteRenderer>().sprite = immagineCarta;
+        GetComponentsInChildren<SpriteRenderer>()[1].sprite = immagineCarta;
     }
 }

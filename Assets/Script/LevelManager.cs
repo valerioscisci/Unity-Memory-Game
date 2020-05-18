@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -11,7 +10,6 @@ public class LevelManager : MonoBehaviour
     private Text testoMessaggio, valorePunteggio; // Crea le variabili di appoggio dei testi mostrati a fine partita
     private GameObject testoPunteggio;
     private AudioManager refAudioManager; // Referenza Audio Manager
-    private bool checkSoundtrack = false; // 
 
     // Start is called before the first frame update
     void Start()
