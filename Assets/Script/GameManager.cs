@@ -1,35 +1,33 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 // Classe che gestisce il gioco nella sua interezza
 public class GameManager : MonoBehaviour
 {
-    private GeneratoreCarte refGeneratore;
+    private GeneratoreCarte refGeneratore; // Prendiamo la referenza del Generatore carte
+    private AudioManager refAudioManager; // Prendiamo la referenza dell'audio manager per poter lanciare i suoni
+    private ViewManager refViewManager; // Prendiamo la referenza del view manager per poter gestire i cambiamente grafici
+    private LevelManager refLevelManager; // Prendiamo la referenza del level manager per poter gestire il cambio livello
     private GameObject cartaCliccata_1 = null, cartaCliccata_2 = null; // Variabili per memorizzare le carte che sono state cliccate
-    private int contatoreClick = 2; // Contatore che memorizza il numero di click disponibili
-    private bool abilitaClick = true, distruggiCheck = false; // Check che permettono di abilitare il click delle carte e il suono del flip
     private GameObject[] carteCliccate = new GameObject[2]; // Variabile di appoggio da passare alla Coroutine che verificherà se esse sono uguali
+    private int contatoreClick = 2; // Contatore che memorizza il numero di click disponibili
     private int vite = 2, combo = 1; // Variabili che contengono le vite e la combo  attuali
-    private Text testoPunteggio; // Variabile che mi serve per assegnare il valore del punteggio al testo "In-Game"
-    private Image[] cuori = new Image[3]; // Variabili per le immaggini dei cuori
     private int carteRimanenti = 16; // Contatore della carte rimanenti da accoppiare prima del termine della partita
-    private AudioManager refAudioManager; // Prendiamo la referenza all'audio manager per poter lanciare i suoni
-    private ComboManager refComboManager; // Prendiamo la referenza del combo manager per poter visualizzare le combo
+    private bool abilitaClick = true, distruggiCheck = false; // Check che permettono di abilitare il click delle carte e il suono del flip
+    static public string messaggio = ""; // Variabile per contenere il messaggio a fine partita
+    static public int punteggio = 0; // Messaggio per contenere il punteggio accumulato in una partita
 
     // Start is called before the first frame update
     void Start()
     {
         refGeneratore = GameObject.FindGameObjectWithTag("GeneratoreCarte").GetComponent<GeneratoreCarte>(); // Prendiamo la referenza del generatore di carte
-        GameObject[,] mazzoCarte = refGeneratore.getMazzoCarte(); // Recuperiamo il mazzo di carte generato dal generatore
-        StartCoroutine("GiraCarte", mazzoCarte); // Lanciamo la Coroutine che gira le carte dopo 2 secondi 
-        testoPunteggio = GameObject.FindGameObjectWithTag("Punteggio").GetComponent<Text>(); // Prendiamo la referenza al punteggio in game per poi cambiarlo al momento giusto 
-        cuori = GameObject.FindGameObjectWithTag("Cuore").GetComponentsInChildren<Image>(); // Recuperiamo i cuori
-        SharedVariables.punteggio = 0; // Azzeriamo il punteggio ad inizio partita visto che potrebbe essere ancora presente quello della partita precedente
+        refViewManager = GameObject.FindGameObjectWithTag("ViewManager").GetComponent<ViewManager>(); // Prende l'oggetto con il tag ComboManager
         refAudioManager = GameObject.FindGameObjectWithTag("AudioManager").GetComponent<AudioManager>(); // Prende l'oggetto con il tag AudioManager in modo da averlo disponibile in ogni scena visto che il GameManager è sempre presente
-        refComboManager = GameObject.FindGameObjectWithTag("ComboManager").GetComponent<ComboManager>(); // Prende l'oggetto con il tag ComboManager
+        refLevelManager = GameObject.FindGameObjectWithTag("LevelManager").GetComponent<LevelManager>(); // Prende l'oggetto con il tag LevelManager
+        GameObject[,] mazzoCarte = refGeneratore.getMazzoCarte(); // Recuperiamo il mazzo di carte generato dal generatore
+        refViewManager.GiraCarteMazzo(mazzoCarte); // Lancia il metodo che gira le carte a inizio partita
+        punteggio = 0; // Azzeriamo il punteggio ad inizio partita visto che potrebbe essere ancora presente quello della partita precedente
     }
 
     // Update is called once per frame
@@ -50,14 +48,14 @@ public class GameManager : MonoBehaviour
             {
                 cartaCliccata_1 = cartaCliccata;
                 StartCoroutine("AnimazioneCarta", cartaCliccata_1);  // Coroutine che gestisce l'animazione del flip della carta 1
-                cartaCliccata_1.GetComponentsInChildren<ParticleSystem>()[0].Play(); // Lancia l'effetto particellare del click sulla carta 1
+                refViewManager.ParticelleClickCarta(cartaCliccata_1); // Lancia l'effetto particellare della carta cliccata
             }
             else if (contatoreClick == 0) // Quando viene cliccata la seconda carta che non sia la stessa identica prima carta cliccata si entra nell'else
             {
                 abilitaClick = false; // Disabilita i click fino a fine controllo
                 cartaCliccata_2 = cartaCliccata;
                 StartCoroutine("AnimazioneCarta", cartaCliccata_2); // Coroutine che gestisce l'animazione del flip della carta 2
-                cartaCliccata_2.GetComponentsInChildren<ParticleSystem>()[0].Play(); // Lancia l'animazione del click sulla carta 2
+                refViewManager.ParticelleClickCarta(cartaCliccata_2); // Lancia l'effetto particellare della carta cliccata
                 CheckNomi(); // Parte il metodo per il controllo delle carte cliccate
             }
         }
@@ -79,20 +77,6 @@ public class GameManager : MonoBehaviour
         cartaCliccata_1 = null; // Azzera la prima carta così può riniziare il controllo della prossima coppia di carte cliccate
     }
 
-    // Coroutine che abilita il retro di tutte le carte del mazzo e lancia l'animazione del flip ad inizio partita dopo 2 secondi
-    private IEnumerator GiraCarte(GameObject[,] mazzoCarte)
-    {
-        Cursor.lockState = CursorLockMode.Locked; // Blocca il cursore dell'utente
-        yield return new WaitForSeconds(2);
-        foreach (GameObject carta in mazzoCarte)
-        {
-            carta.GetComponentsInChildren<SpriteRenderer>()[0].enabled = true; // Abilitiamo il retro di ogni carta
-            carta.GetComponentsInChildren<Animator>()[0].enabled = true; // Lanciamo l'animazione del retro della carta
-            carta.GetComponentsInChildren<Animator>()[1].enabled = true; // Lanciamo l'animazione del fronte della carta
-        }
-        Cursor.lockState = CursorLockMode.Confined; // Riabilita il cursore dell'utente
-    }
-
     // Coroutine che si occupa di distruggere le carte se uguali e di rigirarle se diverse
     private IEnumerator GestisciCoppiaCarte(string azione)
     {
@@ -100,20 +84,20 @@ public class GameManager : MonoBehaviour
         if (azione.Equals("distruggi")) {
             
             yield return new WaitForSeconds(1); // Aspetta un secondo
-            carteCliccate[0].GetComponentsInChildren<ParticleSystem>()[1].Play(); // Lancia l'effetto particellare della distruzione sulla carta 1
-            carteCliccate[1].GetComponentsInChildren<ParticleSystem>()[1].Play(); // Lancia l'effetto particellare della distruzione sulla carta 2
-            yield return new WaitForSeconds(1); // Aspetta un secondo
+            refViewManager.ParticelleDistruggiCarta(carteCliccate[0]); // Lancia l'effetto particellare della carta distrutta
+            refViewManager.ParticelleDistruggiCarta(carteCliccate[1]); // Lancia l'effetto particellare della carta distrutta
             refAudioManager.GetCardDestroy().Play(); // Lancio l'audio della distruzione delle carte
+            yield return new WaitForSeconds(1); // Aspetta un secondo
             carteCliccate[0].SetActive(false); // Distruggi Carta 1
             carteCliccate[1].SetActive(false); // Distruggi Carta 2
-            SharedVariables.punteggio += 100 * combo; // Aumenta il punteggio
-            testoPunteggio.text = SharedVariables.punteggio.ToString(); // Assegna il testo del punteggio "In-Game"
-            StartCoroutine("MostraCombo"); // Lanciamo la coroutine che mostra la combo attuale
+            punteggio += 100 * combo; // Aumenta il punteggio
+            refViewManager.VisualizzaPunteggio(punteggio); // Lancia il metodo che aggiorna il testo del punteggio
+            refViewManager.EseguiCombo(combo);
             combo++; // Aumenta la combo attuale
             carteRimanenti -= 2; // Diminuisce le carte rimanenti per la vittoria
             if (carteRimanenti == 0) // Se non rimangono più carte, la partita termina con successo
             {
-                TerminaPartita("vittoria");
+                refLevelManager.TerminaPartita("vittoria", refViewManager);
             }
         }
         else if (azione.Equals("reset"))
@@ -124,7 +108,7 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(1); // Aspetta un secondo
             carteCliccate[0].GetComponentsInChildren<Animator>()[1].SetBool("cliccataFronte", false); // Fa partire l'animazione del fronte della carta 1
             carteCliccate[1].GetComponentsInChildren<Animator>()[1].SetBool("cliccataFronte", false); // Fa partire l'animazione del fronte della carta 2
-            yield return new WaitForSeconds(0.3f); // Aspetta 0.3 secondi
+            yield return new WaitForSeconds(0.2f); // Aspetta 0.15 secondi
             carteCliccate[0].GetComponentsInChildren<Animator>()[0].SetBool("cliccata", false); // Fa partire l'animazione del retro della carta 1
             carteCliccate[1].GetComponentsInChildren<Animator>()[0].SetBool("cliccata", false); // Fa partire l'animazione del restro della carta 2
             // Segno che la coppia è errata con le prossime 4 istruzioni, permettendo la rotazione delle carte
@@ -135,12 +119,12 @@ public class GameManager : MonoBehaviour
             carteCliccate[0].GetComponent<ScriptCarta>().SetCliccata(); // Indica che la prima carta non è più cliccata
             carteCliccate[1].GetComponent<ScriptCarta>().SetCliccata(); // Indica che la seconda carta non è più cliccata
             combo = 1; // Resetta le combo
-            StartCoroutine("DistruggiCuore", cuori[vite]); // Rimuove uno dei cuori disponibili
+            refViewManager.DistruggiCuori(vite); // Chiama il metodo che distrugge un cuore
             vite -= 1; // Diminuisce le vite 
             if (vite == -1) // Se non ci sono più vite termina la partita con una sconfitta
             {
                 yield return new WaitForSeconds(1); // Aspetta un secondo
-                TerminaPartita("sconfitta");
+                refLevelManager.TerminaPartita("sconfitta", refViewManager);
             }
             yield return new WaitForSeconds(1); // Aspetta un secondo
             // Con le prossime 4 istruzioni rimetto le variabili per la comboErrata a false così nell'albero delle animazioni si attende che una nuova coppia sia cliccata prima di ripartire con le animazioni per farle tornare in posizione se errate
@@ -154,41 +138,11 @@ public class GameManager : MonoBehaviour
         contatoreClick = 2; // Reset contatore
     }
 
-    // Metodo che si occupa di terminare la partita
-    private void TerminaPartita(string finePartita)
-    {
-        if (finePartita.Equals("vittoria"))
-        {
-            SharedVariables.messaggio = "HAI VINTO!!!";
-        } else
-        {
-            SharedVariables.messaggio = "HAI PERSO...";
-        }
-        SceneManager.LoadScene("FinePartita", LoadSceneMode.Single); // Cambio di scena che mostra il risultato della partita, 
-    }
-
-    // Coroutine che mostra l'animazione di distruzione del cuore
-    IEnumerator DistruggiCuore(Image cuore)
-    {
-        cuore.GetComponent<Animator>().enabled = true; // Lancia l'animazione
-        yield return new WaitForSeconds(1); // Aspetta 1 secondo
-        Destroy(cuore.gameObject); // Distrugge l'oggetto
-    }
-
-    // Coroutine che mostra l'animazione della combo attuale
-    IEnumerator MostraCombo()
-    {
-        refComboManager.GetComponentInChildren<SpriteRenderer>().sprite = refComboManager.GetSpritesCombo(combo); // Prendiamo la sprite corretta da visualizzare in base alla combo
-        refComboManager.GetComponentInChildren<Animator>().enabled = true; // Lanciamo l'animazione che la mostra
-        yield return new WaitForSeconds(1); // Aspetta 1 secondo
-        refComboManager.GetComponentInChildren<Animator>().enabled = false; // Disattiviamo l'animazione in modo da poterla lanciare nuovamente la prossima volta
-    }
-
     // Coroutine che mostra l'animazione della combo attuale
     IEnumerator AnimazioneCarta(GameObject cartaCliccata)
     {
         cartaCliccata.GetComponentsInChildren<Animator>()[0].SetBool("cliccata", true); // Lancia l'animazione del retro della carta passata come parametro
-        yield return new WaitForSeconds(0.3f); // Aspetta 0.3 secondi
+        yield return new WaitForSeconds(0.2f); // Aspetta 0.15 secondi
         cartaCliccata.GetComponentsInChildren<Animator>()[1].SetBool("cliccataFronte", true); // Lancia l'animazione del fronte della carta passata come parametro
     }
 

@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 // Classe che definisce tutti i comportamenti e le informazioni della singola carta
 public class ScriptCarta : MonoBehaviour
@@ -25,9 +23,9 @@ public class ScriptCarta : MonoBehaviour
         if (cliccata == false && refGameManager.GetDistruggiCheck() == false) // Verifichiamo che sia la prima volta che clicchiamo la carta e che non si stanno controllando due carte
         {
             refGameManager.GetAudioManager().GetCardFlip().Play(); // Eseguiamo il suono della carta che viene ruotata
+            cliccata = true;
+            refGameManager.SottraiClick(gameObject);
         }
-        cliccata = true;
-        refGameManager.SottraiClick(gameObject);
     }
 
     // Setter cliccata

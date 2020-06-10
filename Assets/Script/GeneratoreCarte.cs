@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 // Classe che si occupa di generare il mazzo di carte e di assegnare una posizione sulla griglia a tutte le carte
 
